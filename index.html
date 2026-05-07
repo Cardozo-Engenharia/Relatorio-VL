@@ -477,7 +477,26 @@
       <div class="field-row">
         <div class="field" id="f-placa">
           <label>Placa / TAG <span class="req">*</span></label>
-          <input type="text" id="placa" placeholder="Ex: ABC-1234" maxlength="10" oninput="update()">
+          <div class="select-wrap">
+            <select id="placa" onchange="vals['placa']=this.value; document.getElementById('f-placa').classList.remove('invalid'); update()">
+              <option value="">Selecione a placa...</option>
+              <option>SYX8J91</option>
+              <option>TYI3J08</option>
+              <option>TCF9F61</option>
+              <option>TXA2J74</option>
+              <option>TXA2J73</option>
+              <option>TCF3J20</option>
+              <option>HIV8J67</option>
+              <option>HIV8J66</option>
+              <option>TXA7G66</option>
+              <option>TXA8J47</option>
+              <option>HIV8J57</option>
+              <option>TCF9F53</option>
+              <option>TOK8H30</option>
+              <option>TYI3J66</option>
+              <option>HIV8J60</option>
+            </select>
+          </div>
           <div class="error-msg">Obrigatório</div>
         </div>
         <div class="field" id="f-condutor">
@@ -827,6 +846,7 @@ function getReqFields() {
 function fieldFilled(f) {
   if (['radio','extintor','giroflex','limpInterna','limpExterna','nc','combustivel','letra',
        'calcoRodaDireita','calcoRodaEsquerda'].includes(f)) return !!vals[f];
+  if (f === 'placa') { const el = document.getElementById('placa'); return el && el.value !== ''; }
   if (f === 'turno') { const el = document.getElementById('turno'); return el && el.value !== ''; }
   if (f === 'ncDesc') return (document.getElementById('ncDescText')||{value:''}).value.trim().length > 0;
   const el = document.getElementById(f);
@@ -857,44 +877,45 @@ function gerarRelatorio() {
   const g = id => (document.getElementById(id)||{value:''}).value.trim();
   const v = key => vals[key] || '';
   const turnoVal = document.getElementById('turno').value;
-  const nc = v('nc') === 'Sim' ? `Sim\n   Descricao: ${g('ncDescText')}` : 'Nao';
+  const placaVal = document.getElementById('placa').value;
+  const nc = v('nc') === 'Sim' ? `Sim\n   Descrição: ${g('ncDescText')}` : 'Não';
   const obs = g('obs') || '-';
 
   const txt = [
-    `*RELATORIO DE FIM DE TURNO - VL*`,
+    `*RELATÓRIO DE FIM DE TURNO - VL*`,
     `Data/Hora: ${nowStr()}`,
     ``,
-    `*IDENTIFICACAO*`,
-    `Placa/TAG: ${g('placa').toUpperCase()}`,
+    `*IDENTIFICAÇÃO*`,
+    `Placa/TAG: ${placaVal}`,
     `Condutor: ${g('condutor')}`,
     `Turno: ${turnoVal} - Letra ${v('letra')}`,
     ``,
-    `*LOCALIZACAO*`,
-    `Localizacao da VL: ${g('locVL')}`,
-    `Localizacao da Chave: ${g('locChave')}`,
+    `*LOCALIZAÇÃO*`,
+    `Localização da VL: ${g('locVL')}`,
+    `Localização da Chave: ${g('locChave')}`,
     ``,
     `*EQUIPAMENTOS*`,
-    `Radio: ${v('radio')} | Local: ${g('locRadio')}`,
+    `Rádio: ${v('radio')} | Local: ${g('locRadio')}`,
     `Extintor: ${v('extintor')} | Local: ${g('locExtintor')}`,
     `Giroflex: ${v('giroflex')} | Local: ${g('locGiroflex')}`,
     ``,
-    `*CALCO DE RODAS*`,
+    `*CALÇO DE RODAS*`,
     `Roda Direita: ${v('calcoRodaDireita')}`,
     `Roda Esquerda: ${v('calcoRodaEsquerda')}`,
     ``,
-    `*CONSERVACAO*`,
+    `*CONSERVAÇÃO*`,
     `Limpeza Interna: ${v('limpInterna')}`,
     `Limpeza Externa: ${v('limpExterna')}`,
-    `Combustivel: ${v('combustivel')}`,
+    `Combustível: ${v('combustivel')}`,
     ``,
-    `*NAO CONFORMIDADE*`,
+    `*NÃO CONFORMIDADE*`,
     `${nc}`,
     ``,
-    `*OBSERVACOES*`,
+    `*OBSERVAÇÕES*`,
     `${obs}`
   ].join('\n');
 
-  const placa = g('placa').toUpperCase();
+  const placa = placaVal;
   const condutor = g('condutor');
 
   document.getElementById('mainApp').style.display = 'none';
