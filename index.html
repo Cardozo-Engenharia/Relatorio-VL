@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Relatório de Fim de Turno — VL | Cardozo Engenharia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --blue: #1E4FBD;
+    --blue-dark: #163A9C;
+    --blue-light: #2D61D8;
+    --gray: #7A7F8E;
+    --gray-dark: #3C4050;
+    --gray-light: #B0B5C3;
+    --white: #FFFFFF;
+    --bg: #F0F2F7;
+    --card: #FFFFFF;
+    --border: #DDE1EC;
+    --text: #1A1D2B;
+    --text-sec: #5A5F72;
+    --danger: #D93025;
+    --success: #1E7E34;
+    --success-light: #EAF5EB;
+    --danger-light: #FDECEA;
+    --warn: #B8860B;
+    --warn-light: #FFF8E1;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0D2A7A 0%, #1E4FBD 60%, #2D61D8 100%);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(30,79,189,0.25);
+  }
+  .header-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-svg {
+    height: 42px;
+    width: 110px;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .header-text p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 2px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    background: #0D2A7A;
+    padding: 10px 20px 12px;
+  }
+  .progress-wrap-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .progress-bar-bg {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    height: 5px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 5px;
+    background: linear-gradient(90deg, #7EB6FF, #fff);
+    border-radius: 4px;
+    transition: width 0.35s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+  }
+
+  /* SECTION */
+  .section {
+    background: var(--card);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .section-header {
+    background: var(--blue);
+    padding: 9px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-header i {
+    font-size: 15px;
+    color: rgba(255,255,255,0.8);
+  }
+  .section-header span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .section-body {
+    padding: 16px;
+  }
+
+  /* FIELD */
+  .field {
+    margin-bottom: 14px;
+  }
+  .field:last-child { margin-bottom: 0; }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+  .field label .req { color: var(--danger); margin-left: 2px; }
+  .field input[type=text],
+  .field select,
+  .field textarea {
+    width: 100%;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    padding: 9px 12px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: #F7F9FC;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--blue);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(30,79,189,0.1);
+  }
+  .field textarea { resize: vertical; min-height: 72px; }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '\ea99';
+    font-family: 'tabler-icons';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    pointer-events: none;
+    font-size: 16px;
+  }
+  .error-msg {
+    font-size: 11px;
+    color: var(--danger);
+    margin-top: 4px;
+    display: none;
+  }
+  .field.invalid .error-msg { display: block; }
+  .field.invalid input,
+  .field.invalid select,
+  .field.invalid textarea { border-color: var(--danger); background: #fff8f8; }
+
+  /* PILLS */
+  .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: #F7F9FC;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-sec);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .pill:hover { border-color: var(--blue-light); color: var(--blue); }
+  .pill.ok { border-color: var(--success); background: var(--success-light); color: var(--success); }
+  .pill.nok { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+  .pill.warn { border-color: var(--warn); background: var(--warn-light); color: var(--warn); }
+  .pill.sel-blue { border-color: var(--blue); background: #EEF3FF; color: var(--blue); font-weight: 600; }
+
+  /* FUEL */
+  .fuel-group { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+  .fuel-btn {
+    padding: 9px 4px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: #F7F9FC;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-sec);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .fuel-btn.selected { border-color: var(--blue); background: #EEF3FF; color: var(--blue); }
+  .fuel-sub { font-size: 9px; display: block; font-family: 'Barlow', sans-serif; font-weight: 500; letter-spacing: 0.04em; margin-top: 1px; text-transform: uppercase; color: inherit; }
+
+  /* EQUIPMENT BLOCK */
+  .equip-block {
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .equip-block:last-child { margin-bottom: 0; }
+  .equip-header {
+    background: #F0F4FF;
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-bottom: 1px solid var(--border);
+  }
+  .equip-header i { font-size: 15px; color: var(--blue); }
+  .equip-header span { font-size: 12px; font-weight: 600; color: var(--blue-dark); text-transform: uppercase; letter-spacing: 0.06em; }
+  .equip-body { padding: 12px; display: grid; grid-template-columns: 1fr 1.1fr; gap: 12px; align-items: start; }
+  .equip-sublabel { font-size: 10px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+
+  /* PHOTO */
+  .photo-zone {
+    border: 2px dashed var(--blue-light);
+    border-radius: 9px;
+    padding: 22px 16px;
+    text-align: center;
+    cursor: pointer;
+    background: #F5F8FF;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .photo-zone:hover { border-color: var(--blue); background: #EEF3FF; }
+  .photo-zone i { font-size: 32px; color: var(--blue-light); display: block; margin-bottom: 8px; }
+  .photo-zone span { font-size: 13px; color: var(--blue); font-weight: 500; }
+  .photo-zone small { display: block; font-size: 11px; color: var(--gray-light); margin-top: 3px; }
+  .photo-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .photo-thumb { width: 72px; height: 72px; border-radius: 7px; object-fit: cover; border: 2px solid var(--blue-light); }
+
+  /* NC TOGGLE */
+  .nc-extra { display: none; margin-top: 12px; }
+  .nc-extra.show { display: block; }
+
+  /* SUBMIT */
+  .footer-fixed {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(240,242,247,0.97);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    backdrop-filter: blur(8px);
+  }
+  .footer-inner { max-width: 600px; margin: 0 auto; }
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .submit-btn:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); }
+  .submit-btn:disabled {
+    background: var(--border);
+    color: var(--gray-light);
+    cursor: not-allowed;
+    transform: none;
+  }
+  .submit-btn i { font-size: 20px; }
+
+  /* SUCCESS */
+  #successScreen {
+    display: none;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+  }
+  .success-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 40px 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(30,79,189,0.1);
+  }
+  .success-icon { font-size: 56px; color: var(--success); display: block; margin-bottom: 12px; }
+  .success-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .success-card p { font-size: 14px; color: var(--text-sec); line-height: 1.6; }
+  .wa-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    padding: 13px 28px;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: opacity 0.15s;
+  }
+  .wa-btn:hover { opacity: 0.88; }
+  .new-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    border-radius: 9px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .new-btn:hover { background: #EEF3FF; }
+  .report-box {
+    background: #F7F9FC;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 20px;
+    text-align: left;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    font-family: 'Barlow', sans-serif;
+  }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+  /* DATE BADGE */
+  .date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 10px;
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 400px) {
+    .field-row { grid-template-columns: 1fr; }
+    .equip-body { grid-template-columns: 1fr; }
+    .fuel-group { grid-template-columns: repeat(4,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <!-- Logo SVG inline baseado nas cores azul/cinza da Cardozo -->
+    <svg class="logo-svg" viewBox="0 0 160 50" xmlns="http://www.w3.org/2000/svg">
+      <!-- C arc -->
+      <path d="M34 7 A19 19 0 1 0 34 43 L34 36 A12 12 0 1 1 34 14 Z" fill="#1E4FBD"/>
+      <!-- Lightning bolt inside C -->
+      <polygon points="30,13 21,27 28,27 19,40 36,23 28,23" fill="#7A7F8E"/>
+      <!-- CARDOZO text -->
+      <text x="48" y="30" font-family="Arial Black, sans-serif" font-weight="900" font-size="19" fill="#1E4FBD" letter-spacing="1">CARDOZO</text>
+      <!-- ENGENHARIA subtext -->
+      <text x="49" y="42" font-family="Arial, sans-serif" font-weight="400" font-size="8" fill="#7A7F8E" letter-spacing="2.5">ENGENHARIA</text>
+    </svg>
+    <div class="header-text">
+      <h1>Cardozo Engenharia</h1>
+      <p>Relatório de Fim de Turno — VL</p>
+    </div>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-wrap-inner">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 de 17 campos obrigatórios preenchidos</div>
+  </div>
+</div>
+
+<div class="main" id="mainApp">
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-id-badge-2"></i>
+      <span>Identificação</span>
+    </div>
+    <div class="section-body">
+      <div class="field-row">
+        <div class="field" id="f-placa">
+          <label>Placa / TAG <span class="req">*</span></label>
+          <input type="text" id="placa" placeholder="Ex: ABC-1234" maxlength="10" oninput="update()">
+          <div class="error-msg">Obrigatório</div>
+        </div>
+        <div class="field" id="f-condutor">
+          <label>Nome do Condutor <span class="req">*</span></label>
+          <input type="text" id="condutor" placeholder="Nome completo" oninput="update()">
+          <div class="error-msg">Obrigatório</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field" id="f-turno">
+          <label>Turno <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="turno" onchange="vals['turno']=this.value; document.getElementById('f-turno').classList.remove('invalid'); update()">
+              <option value="">Selecione...</option>
+              <option value="1º Turno">1º Turno</option>
+              <option value="2º Turno">2º Turno</option>
+            </select>
+          </div>
+          <div class="error-msg">Obrigatório</div>
+        </div>
+        <div class="field" id="f-letra">
+          <label>Letra <span class="req">*</span></label>
+          <div class="pill-group" style="flex-wrap:nowrap;">
+            <div class="pill" onclick="selPill(this,'letra','A')">A</div>
+            <div class="pill" onclick="selPill(this,'letra','B')">B</div>
+            <div class="pill" onclick="selPill(this,'letra','C')">C</div>
+            <div class="pill" onclick="selPill(this,'letra','D')">D</div>
+          </div>
+          <div class="error-msg">Obrigatório</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCALIZAÇÃO -->
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-map-pin"></i>
+      <span>Localização</span>
+    </div>
+    <div class="section-body">
+      <div class="field" id="f-locVL">
+        <label>Localização da VL <span class="req">*</span></label>
+        <input type="text" id="locVL" placeholder="Ex: Pátio A — Vaga 12" oninput="update()">
+        <div class="error-msg">Obrigatório</div>
+      </div>
+      <div class="field" id="f-locChave">
+        <label>Localização da Chave <span class="req">*</span></label>
+        <input type="text" id="locChave" placeholder="Ex: Painel de chaves — Sala de operação" oninput="update()">
+        <div class="error-msg">Obrigatório</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQUIPAMENTOS -->
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-tool"></i>
+      <span>Equipamentos</span>
+    </div>
+    <div class="section-body">
+
+      <!-- RÁDIO -->
+      <div class="equip-block">
+        <div class="equip-header">
+          <i class="ti ti-radio"></i>
+          <span>Rádio</span>
+        </div>
+        <div class="equip-body">
+          <div>
+            <div class="equip-sublabel">Status <span class="req" style="color:var(--danger)">*</span></div>
+            <div class="field" id="f-radio" style="margin:0">
+              <div class="pill-group" style="flex-direction:column;gap:5px">
+                <div class="pill" onclick="selPill(this,'radio','OK')">✔ OK</div>
+                <div class="pill" onclick="selPill(this,'radio','Com defeito')">⚠ Com defeito</div>
+                <div class="pill" onclick="selPill(this,'radio','Ausente')">✕ Ausente</div>
+              </div>
+              <div class="error-msg">Obrigatório</div>
+            </div>
+          </div>
+          <div>
+            <div class="equip-sublabel">Localização <span class="req" style="color:var(--danger)">*</span></div>
+            <div class="field" id="f-locRadio" style="margin:0">
+              <input type="text" id="locRadio" placeholder="Ex: Suporte do painel" oninput="update()">
+              <div class="error-msg">Obrigatório</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXTINTOR -->
+      <div class="equip-block">
+        <div class="equip-header">
+          <i class="ti ti-flame"></i>
+          <span>Extintor</span>
+        </div>
+        <div class="equip-body">
+          <div>
+            <div class="equip-sublabel">Status <span class="req" style="color:var(--danger)">*</span></div>
+            <div class="field" id="f-extintor" style="margin:0">
+              <div class="pill-group" style="flex-direction:column;gap:5px">
+                <div class="pill" onclick="selPill(this,'extintor','OK')">✔ OK</div>
+                <div class="pill" onclick="selPill(this,'extintor','Vencido')">⚠ Vencido</div>
+                <div class="pill" onclick="selPill(this,'extintor','Ausente')">✕ Ausente</div>
+              </div>
+              <div class="error-msg">Obrigatório</div>
+            </div>
+          </div>
+          <div>
+            <div class="equip-sublabel">Localização <span class="req" style="color:var(--danger)">*</span></div>
+            <div class="field" id="f-locExtintor" style="margin:0">
+              <input type="text" id="locExtintor" placeholder="Ex: Porta traseira direita" oninput="update()">
+              <div class="error-msg">Obrigatório</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GIROFLEX -->
+      <div class="equip-block">
+        <div class="equip-header">
+          <i class="ti ti-alert-circle"></i>
+          <span>Giroflex</span>
+        </div>
+        <div class="equip-body">
+          <div>
+            <div class="equip-sublabel">Status <span class="req" style="color:var(--danger)">*</span></div>
+            <div class="field" id="f-giroflex" style="margin:0">
+              <div class="pill-group" style="flex-direction:column;gap:5px">
+                <div class="pill" onclick="selPill(this,'giroflex','OK')">✔ OK</div>
+                <div class="pill" onclick="selPill(this,'giroflex','Com defeito')">⚠ Com defeito</div>
+                <div class="pill" onclick="selPill(this,'giroflex','Ausente')">✕ Ausente</div>
+              </div>
+              <div class="error-msg">Obrigatório</div>
+            </div>
+          </div>
+          <div>
+            <div class="equip-sublabel">Localização <span class="req" style="color:var(--danger)">*</span></div>
+            <div class="field" id="f-locGiroflex" style="margin:0">
+              <input type="text" id="locGiroflex" placeholder="Ex: Teto do veículo" oninput="update()">
+              <div class="error-msg">Obrigatório</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONSERVAÇÃO -->
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-sparkles"></i>
+      <span>Conservação</span>
+    </div>
+    <div class="section-body">
+      <div class="field" id="f-limpInterna">
+        <label>Limpeza Interna <span class="req">*</span></label>
+        <div class="pill-group">
+          <div class="pill" onclick="selPill(this,'limpInterna','Realizada')">✔ Realizada</div>
+          <div class="pill" onclick="selPill(this,'limpInterna','Não realizada')">✕ Não realizada</div>
+        </div>
+        <div class="error-msg">Obrigatório</div>
+      </div>
+      <div class="field" id="f-limpExterna">
+        <label>Limpeza Externa <span class="req">*</span></label>
+        <div class="pill-group">
+          <div class="pill" onclick="selPill(this,'limpExterna','Realizada')">✔ Realizada</div>
+          <div class="pill" onclick="selPill(this,'limpExterna','Não realizada')">✕ Não realizada</div>
+        </div>
+        <div class="error-msg">Obrigatório</div>
+      </div>
+      <div class="field" id="f-combustivel">
+        <label>Nível de Combustível <span class="req">*</span></label>
+        <div class="fuel-group">
+          <div class="fuel-btn" onclick="fuelSel(this,'1/4')">¼<span class="fuel-sub">25%</span></div>
+          <div class="fuel-btn" onclick="fuelSel(this,'1/2')">½<span class="fuel-sub">50%</span></div>
+          <div class="fuel-btn" onclick="fuelSel(this,'3/4')">¾<span class="fuel-sub">75%</span></div>
+          <div class="fuel-btn" onclick="fuelSel(this,'Cheio')">F<span class="fuel-sub">Cheio</span></div>
+        </div>
+        <div class="error-msg">Obrigatório</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NÃO CONFORMIDADE -->
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-alert-triangle"></i>
+      <span>Não Conformidade</span>
+    </div>
+    <div class="section-body">
+      <div class="field" id="f-nc">
+        <label>Houve alguma não conformidade? <span class="req">*</span></label>
+        <div class="pill-group">
+          <div class="pill" onclick="ncSel(this,'Não')">✔ Não</div>
+          <div class="pill" onclick="ncSel(this,'Sim')">⚠ Sim</div>
+        </div>
+        <div class="error-msg">Obrigatório</div>
+      </div>
+      <div class="nc-extra" id="ncExtra">
+        <div class="field" id="f-ncDesc">
+          <label>Descrição da Não Conformidade <span class="req">*</span></label>
+          <textarea id="ncDescText" placeholder="Descreva a falha mecânica ou ocorrência..." oninput="update()"></textarea>
+          <div class="error-msg">Obrigatório quando há não conformidade</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALÇO -->
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-circle-half-2"></i>
+      <span>Calço de Rodas</span>
+    </div>
+    <div class="section-body">
+      <div class="field" id="f-calcoRodaDireita">
+        <label>Calço — Roda Direita <span class="req">*</span></label>
+        <div class="pill-group">
+          <div class="pill" onclick="selPill(this,'calcoRodaDireita','Colocado')">Colocado</div>
+          <div class="pill" onclick="selPill(this,'calcoRodaDireita','Não colocado')">Não colocado</div>
+        </div>
+        <div class="error-msg">Obrigatório</div>
+      </div>
+      <div class="field" id="f-calcoRodaEsquerda">
+        <label>Calço — Roda Esquerda <span class="req">*</span></label>
+        <div class="pill-group">
+          <div class="pill" onclick="selPill(this,'calcoRodaEsquerda','Colocado')">Colocado</div>
+          <div class="pill" onclick="selPill(this,'calcoRodaEsquerda','Não colocado')">Não colocado</div>
+        </div>
+        <div class="error-msg">Obrigatório</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OBSERVAÇÕES -->
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-notes"></i>
+      <span>Observações Gerais</span>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Observações (opcional)</label>
+        <textarea id="obs" placeholder="Informações adicionais relevantes..." style="min-height:80px" oninput="update()"></textarea>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- FOOTER FIXO -->
+<div class="footer-fixed">
+  <div class="footer-inner">
+    <button class="submit-btn" id="submitBtn" onclick="gerarRelatorio()" disabled>
+      <i class="ti ti-file-check"></i>
+      Gerar Relatório
+    </button>
+  </div>
+</div>
+
+<!-- TELA DE SUCESSO -->
+<div id="successScreen">
+  <div class="success-card">
+    <i class="ti ti-circle-check success-icon"></i>
+    <h2>Relatório Gerado!</h2>
+    <p id="successInfo"></p>
+    <div class="report-box" id="reportBox"></div>
+    <br>
+    <a class="wa-btn" id="waBtn" href="#" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Enviar pelo WhatsApp
+    </a>
+    <br>
+    <button class="new-btn" onclick="novoRelatorio()">
+      <i class="ti ti-refresh"></i> Novo relatório
+    </button>
+  </div>
+</div>
+
+<script>
+const vals = {};
+
+function nowStr() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const dias = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  return `${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()} — ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function selPill(el, field, value) {
+  el.closest('.pill-group').querySelectorAll('.pill').forEach(p => p.className = 'pill');
+  if (['OK','Realizada','Não','A','B','C','D'].includes(value)) el.classList.add('ok');
+  else if (['Sim','Com defeito','Vencido','Ausente','Não realizada'].includes(value)) el.classList.add('nok');
+  else el.classList.add('sel-blue');
+  vals[field] = value;
+  const fEl = document.getElementById('f-' + field);
+  if (fEl) fEl.classList.remove('invalid');
+  update();
+}
+
+function fuelSel(el, value) {
+  document.querySelectorAll('.fuel-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  vals['combustivel'] = value;
+  document.getElementById('f-combustivel').classList.remove('invalid');
+  update();
+}
+
+function ncSel(el, value) {
+  selPill(el, 'nc', value);
+  document.getElementById('ncExtra').classList.toggle('show', value === 'Sim');
+  update();
+}
+
+function photoAdded(input) {
+  if (!input.files.length) return;
+  const preview = document.getElementById('photoPreview');
+  preview.innerHTML = '';
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'photo-thumb';
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('photoLabel').textContent = `${input.files.length} foto(s) selecionada(s)`;
+  document.getElementById('f-foto').classList.remove('invalid');
+  vals['foto'] = true;
+  update();
+}
+
+function getReqFields() {
+  const base = ['placa','condutor','turno','letra','locVL','locChave',
+                 'radio','locRadio','extintor','locExtintor','giroflex','locGiroflex',
+                 'limpInterna','limpExterna','combustivel','nc',
+                 'calcoRodaDireita','calcoRodaEsquerda'];
+  if (vals['nc'] === 'Sim') base.push('ncDesc');
+  return base;
+}
+
+function fieldFilled(f) {
+  if (['radio','extintor','giroflex','limpInterna','limpExterna','nc','combustivel','letra',
+       'calcoRodaDireita','calcoRodaEsquerda'].includes(f)) return !!vals[f];
+  if (f === 'turno') { const el = document.getElementById('turno'); return el && el.value !== ''; }
+  if (f === 'ncDesc') return (document.getElementById('ncDescText')||{value:''}).value.trim().length > 0;
+  const el = document.getElementById(f);
+  return el && el.value.trim().length > 0;
+}
+
+function update() {
+  const req = getReqFields();
+  const filled = req.filter(fieldFilled).length;
+  const pct = Math.round(filled / req.length * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${filled} de ${req.length} campos obrigatórios preenchidos`;
+  document.getElementById('submitBtn').disabled = filled < req.length;
+}
+
+function gerarRelatorio() {
+  const req = getReqFields();
+  let ok = true;
+  req.forEach(f => {
+    if (!fieldFilled(f)) {
+      const el = document.getElementById('f-' + f);
+      if (el) el.classList.add('invalid');
+      ok = false;
+    }
+  });
+  if (!ok) { window.scrollTo({top:0,behavior:'smooth'}); return; }
+
+  const g = id => (document.getElementById(id)||{value:''}).value.trim();
+  const v = key => vals[key] || '';
+  const turnoVal = document.getElementById('turno').value;
+  const nc = v('nc') === 'Sim' ? `Sim\n   Descricao: ${g('ncDescText')}` : 'Nao';
+  const obs = g('obs') || '-';
+
+  const txt = [
+    `*RELATORIO DE FIM DE TURNO - VL*`,
+    `Data/Hora: ${nowStr()}`,
+    ``,
+    `*IDENTIFICACAO*`,
+    `Placa/TAG: ${g('placa').toUpperCase()}`,
+    `Condutor: ${g('condutor')}`,
+    `Turno: ${turnoVal} - Letra ${v('letra')}`,
+    ``,
+    `*LOCALIZACAO*`,
+    `Localizacao da VL: ${g('locVL')}`,
+    `Localizacao da Chave: ${g('locChave')}`,
+    ``,
+    `*EQUIPAMENTOS*`,
+    `Radio: ${v('radio')} | Local: ${g('locRadio')}`,
+    `Extintor: ${v('extintor')} | Local: ${g('locExtintor')}`,
+    `Giroflex: ${v('giroflex')} | Local: ${g('locGiroflex')}`,
+    ``,
+    `*CALCO DE RODAS*`,
+    `Roda Direita: ${v('calcoRodaDireita')}`,
+    `Roda Esquerda: ${v('calcoRodaEsquerda')}`,
+    ``,
+    `*CONSERVACAO*`,
+    `Limpeza Interna: ${v('limpInterna')}`,
+    `Limpeza Externa: ${v('limpExterna')}`,
+    `Combustivel: ${v('combustivel')}`,
+    ``,
+    `*NAO CONFORMIDADE*`,
+    `${nc}`,
+    ``,
+    `*OBSERVACOES*`,
+    `${obs}`
+  ].join('\n');
+
+  const placa = g('placa').toUpperCase();
+  const condutor = g('condutor');
+
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+  document.getElementById('successInfo').textContent = `VL ${placa} • ${condutor} • ${turnoVal} - Letra ${v('letra')}`;
+  document.getElementById('reportBox').textContent = txt;
+  document.getElementById('waBtn').href = `https://wa.me/?text=${encodeURIComponent(txt)}`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function novoRelatorio() {
+  Object.keys(vals).forEach(k => delete vals[k]);
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  document.querySelectorAll('input[type=text], select, textarea').forEach(el => el.value = '');
+  document.querySelectorAll('.pill').forEach(p => p.className = 'pill');
+  document.querySelectorAll('.fuel-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('ncExtra').classList.remove('show');
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
+  update();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+update();
+</script>
+</body>
+</html>
