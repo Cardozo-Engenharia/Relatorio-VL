@@ -499,6 +499,21 @@
           <div class="error-msg">Obrigatório</div>
         </div>
       </div>
+      <div class="field" id="f-obra">
+        <label>Obra de Atuação <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select id="obra" onchange="vals['obra']=this.value; document.getElementById('f-obra').classList.remove('invalid'); update()">
+            <option value="">Selecione a obra...</option>
+            <option value="Automação">Automação</option>
+            <option value="Equipagem Elétrica">Equipagem Elétrica</option>
+            <option value="Flexibilidade">Flexibilidade</option>
+            <option value="Equipagem Mecânica">Equipagem Mecânica</option>
+            <option value="Caldeiraria">Caldeiraria</option>
+            <option value="Alta Tensão">Alta Tensão</option>
+          </select>
+        </div>
+        <div class="error-msg">Obrigatório</div>
+      </div>
       <div class="field-row">
         <div class="field" id="f-turno">
           <label>Turno <span class="req" id="req-turno">*</span></label>
@@ -867,7 +882,7 @@ function fuelSel(el, value) {
 }
 
 function getReqFields() {
-  const base = ['placa','condutor','letra','locVL','locChave',
+  const base = ['placa','condutor','obra','letra','locVL','locChave',
                  'radio','locRadio','extintor','locExtintor','giroflex','locGiroflex',
                  'gerador',
                  'limpInterna','limpExterna','combustivel','carroceria',
@@ -882,7 +897,7 @@ function getReqFields() {
 }
 
 function fieldFilled(f) {
-  if (['radio','extintor','giroflex','gerador','limpInterna','limpExterna','carroceria','combustivel','letra',
+  if (['radio','extintor','giroflex','gerador','limpInterna','limpExterna','carroceria','combustivel','letra','obra',
        'calcoRodaDireita','calcoRodaEsquerda'].includes(f)) return !!vals[f];
   if (f === 'placa') { const el = document.getElementById('placa'); return el && el.value !== ''; }
   if (f === 'turno') { const el = document.getElementById('turno'); return el && el.value !== ''; }
@@ -954,6 +969,7 @@ function gerarRelatorio() {
     `*IDENTIFICAÇÃO*`,
     `Placa/TAG: ${placaVal}`,
     `Condutor: ${g('condutor')}`,
+    `Obra de Atuação: ${v('obra')}`,
     `Turno: ${turnoVal} - Letra ${v('letra')}`,
     ``,
     `*LOCALIZAÇÃO*`,
