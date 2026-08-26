@@ -970,7 +970,7 @@ function update() {
   const hint = document.getElementById('hintDataRef');
   if (hint) {
     if (vals['turno'] === '2º Turno') {
-      hint.textContent = `Data de referência: ${dataReferencia()} (dia anterior)`;
+      hint.textContent = `Data de referência: ${dataReferencia()}`;
       hint.classList.add('show');
     } else {
       hint.classList.remove('show');
