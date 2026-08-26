@@ -213,6 +213,17 @@
     display: none;
   }
   .field.invalid .error-msg { display: block; }
+  .hint-msg {
+    font-size: 11px;
+    color: var(--warn);
+    background: var(--warn-light);
+    border: 1px solid #F0E0A8;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin-top: 6px;
+    display: none;
+  }
+  .hint-msg.show { display: block; }
   .field.invalid input,
   .field.invalid select,
   .field.invalid textarea { border-color: var(--danger); background: #fff8f8; }
@@ -507,20 +518,35 @@
           <div class="error-msg">Obrigatório</div>
         </div>
       </div>
-      <div class="field" id="f-obra">
-        <label>Obra de Atuação <span class="req">*</span></label>
-        <div class="select-wrap">
-          <select id="obra" onchange="vals['obra']=this.value; document.getElementById('f-obra').classList.remove('invalid'); update()">
-            <option value="">Selecione a obra...</option>
-            <option value="Automação">Automação</option>
-            <option value="Equipagem Elétrica">Equipagem Elétrica</option>
-            <option value="Flexibilidade">Flexibilidade</option>
-            <option value="Equipagem Mecânica">Equipagem Mecânica</option>
-            <option value="Caldeiraria">Caldeiraria</option>
-            <option value="Alta Tensão">Alta Tensão</option>
-          </select>
+      <div class="field-row">
+        <div class="field" id="f-unidade">
+          <label>Unidade <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="unidade" onchange="vals['unidade']=this.value; document.getElementById('f-unidade').classList.remove('invalid'); update()">
+              <option value="">Selecione a unidade...</option>
+              <option value="Cuiabá">Cuiabá</option>
+              <option value="Lamego">Lamego</option>
+              <option value="CDS">CDS</option>
+            </select>
+          </div>
+          <div class="error-msg">Obrigatório</div>
         </div>
-        <div class="error-msg">Obrigatório</div>
+        <div class="field" id="f-obra">
+          <label>Obra de Atuação <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="obra" onchange="vals['obra']=this.value; document.getElementById('f-obra').classList.remove('invalid'); update()">
+              <option value="">Selecione a obra...</option>
+              <option value="Automação">Automação</option>
+              <option value="Equipagem Elétrica">Equipagem Elétrica</option>
+              <option value="Flexibilidade">Flexibilidade</option>
+              <option value="Equipagem Mecânica">Equipagem Mecânica</option>
+              <option value="Caldeiraria">Caldeiraria</option>
+              <option value="Alta Tensão">Alta Tensão</option>
+              <option value="Infraestrutura de Subsolo">Infraestrutura de Subsolo</option>
+            </select>
+          </div>
+          <div class="error-msg">Obrigatório</div>
+        </div>
       </div>
       <div class="field-row">
         <div class="field" id="f-turno">
@@ -533,6 +559,7 @@
             </select>
           </div>
           <div class="error-msg">Obrigatório</div>
+          <div class="hint-msg" id="hintDataRef"></div>
         </div>
         <div class="field" id="f-letra">
           <label>Letra <span class="req">*</span></label>
@@ -854,6 +881,16 @@ function nowStr() {
   return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+// Data de referência do relatório.
+// No 2º Turno a jornada começa no dia anterior ao preenchimento,
+// por isso o relatório considera a data do dia anterior.
+function dataReferencia() {
+  const pad = n => String(n).padStart(2,'0');
+  const d = new Date();
+  if (vals['turno'] === '2º Turno') d.setDate(d.getDate() - 1);
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+}
+
 const EQUIP_KEYS = ['radio','extintor','giroflex','gerador'];
 
 function selPill(el, field, value) {
@@ -890,13 +927,13 @@ function fuelSel(el, value) {
 }
 
 function getReqFields() {
-  const base = ['placa','condutor','obra','letra','locVL','locChave',
+  const base = ['placa','condutor','unidade','obra','letra','locVL','locChave',
                  'radio','locRadio','extintor','locExtintor','giroflex','locGiroflex',
                  'gerador',
                  'limpInterna','limpExterna','combustivel','carroceria',
                  'calcoRodaDireita','calcoRodaEsquerda'];
   // Turno só é obrigatório quando a letra não for ADM
-  if (vals['letra'] !== 'ADM') base.splice(2, 0, 'turno');
+  if (vals['letra'] !== 'ADM') base.splice(3, 0, 'turno');
   // Localização do gerador só é obrigatória quando o status não for N/A
   if (vals['gerador'] !== 'N/A') base.push('locGerador');
   EQUIP_KEYS.forEach(k => { if (vals[k] === 'N/C') base.push('nc'+k.charAt(0).toUpperCase()+k.slice(1)); });
@@ -905,7 +942,7 @@ function getReqFields() {
 }
 
 function fieldFilled(f) {
-  if (['radio','extintor','giroflex','gerador','limpInterna','limpExterna','carroceria','combustivel','letra','obra',
+  if (['radio','extintor','giroflex','gerador','limpInterna','limpExterna','carroceria','combustivel','letra','obra','unidade',
        'calcoRodaDireita','calcoRodaEsquerda'].includes(f)) return !!vals[f];
   if (f === 'placa') { const el = document.getElementById('placa'); return el && el.value !== ''; }
   if (f === 'turno') { const el = document.getElementById('turno'); return el && el.value !== ''; }
@@ -928,6 +965,18 @@ function update() {
   const reqLocGer = document.getElementById('req-locGerador');
   if (reqLocGer) reqLocGer.style.display = locGerOpcional ? 'none' : '';
   if (turnoOpcional) { const f = document.getElementById('f-turno'); if (f) f.classList.remove('invalid'); }
+
+  // Aviso de data de referência no 2º Turno
+  const hint = document.getElementById('hintDataRef');
+  if (hint) {
+    if (vals['turno'] === '2º Turno') {
+      hint.textContent = `Data de referência: ${dataReferencia()} (dia anterior)`;
+      hint.classList.add('show');
+    } else {
+      hint.classList.remove('show');
+    }
+  }
+
   if (locGerOpcional) { const f = document.getElementById('f-locGerador'); if (f) f.classList.remove('invalid'); }
 
   const filled = req.filter(fieldFilled).length;
@@ -953,6 +1002,7 @@ function gerarRelatorio() {
   const v = key => vals[key] || '';
   const turnoVal = document.getElementById('turno').value;
   const placaVal = document.getElementById('placa').value;
+  const dataRef = dataReferencia();
 
   function equipLine(label, key) {
     const status = v(key);
@@ -972,11 +1022,12 @@ function gerarRelatorio() {
 
   const txt = [
     `*RELATÓRIO DE FIM DE TURNO - VL*`,
-    `Data/Hora: ${nowStr()}`,
+    `Data de Referência: ${dataRef}`,
     ``,
     `*IDENTIFICAÇÃO*`,
     `Placa/TAG: ${placaVal}`,
     `Condutor: ${g('condutor')}`,
+    `Unidade: ${v('unidade')}`,
     `Obra de Atuação: ${v('obra')}`,
     `Turno: ${turnoVal} - Letra ${v('letra')}`,
     ``,
@@ -1011,7 +1062,7 @@ function gerarRelatorio() {
 
   document.getElementById('mainApp').style.display = 'none';
   document.getElementById('successScreen').style.display = 'block';
-  document.getElementById('successInfo').textContent = `VL ${placa} • ${condutor} • ${turnoVal} - Letra ${v('letra')}`;
+  document.getElementById('successInfo').textContent = `VL ${placa} • ${condutor} • ${v('unidade')} • ${turnoVal} - Letra ${v('letra')} • ${dataRef}`;
   document.getElementById('reportBox').textContent = txt;
   document.getElementById('waBtn').href = `https://wa.me/?text=${encodeURIComponent(txt)}`;
   window.scrollTo({top:0,behavior:'smooth'});
