@@ -224,6 +224,40 @@
     display: none;
   }
   .hint-msg.show { display: block; }
+
+  /* RÁDIO VINCULADO */
+  .radio-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--blue);
+    background: #F5F7FD;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+  }
+  .radio-box i { font-size: 20px; color: var(--blue); flex-shrink: 0; }
+  .radio-box-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  .radio-box-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    line-height: 1.15;
+  }
+  .radio-box.pendente { border-left-color: var(--warn); background: var(--warn-light); }
+  .radio-box.pendente i { color: var(--warn); }
+  .radio-box.pendente .radio-box-value { font-size: 14px; color: var(--warn); }
+  .radio-box.vazio { border-left-color: var(--gray-light); background: #FAFBFD; }
+  .radio-box.vazio i { color: var(--gray-light); }
+  .radio-box.vazio .radio-box-value { font-size: 14px; color: var(--gray); }
   .field.invalid input,
   .field.invalid select,
   .field.invalid textarea { border-color: var(--danger); background: #fff8f8; }
@@ -483,7 +517,7 @@
         <div class="field" id="f-placa">
           <label>Placa / TAG <span class="req">*</span></label>
           <div class="select-wrap">
-            <select id="placa" onchange="vals['placa']=this.value; document.getElementById('f-placa').classList.remove('invalid'); update()">
+            <select id="placa" onchange="onPlacaChange(this)">
               <option value="">Selecione a placa...</option>
               <option>TYI3J08</option>
               <option>TCF9F61</option>
@@ -610,6 +644,39 @@
           <span>Rádio</span>
         </div>
         <div class="equip-body" style="grid-template-columns:1fr;">
+          <div class="radio-box vazio" id="radioBox">
+            <i class="ti ti-antenna-bars-5"></i>
+            <div>
+              <div class="radio-box-label">Rádio vinculado à placa</div>
+              <div class="radio-box-value" id="radioBoxValue">Selecione a placa</div>
+            </div>
+          </div>
+
+          <div class="field" id="f-radioConfere" style="display:none">
+            <label>A VL está com o rádio vinculado? <span class="req">*</span></label>
+            <div class="pill-group">
+              <div class="pill" onclick="selPillRadio(this,'Sim')">✔ Sim</div>
+              <div class="pill" onclick="selPillRadio(this,'Não')">✕ Não</div>
+            </div>
+            <div class="error-msg">Obrigatório</div>
+          </div>
+
+          <div class="field" id="f-radioUso" style="display:none">
+            <label>Qual rádio está sendo utilizado? <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="radioUso" onchange="update()">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div class="error-msg">Obrigatório</div>
+          </div>
+
+          <div class="field" id="f-radioObs" style="display:none">
+            <label>Motivo da divergência <span class="req">*</span></label>
+            <textarea id="radioObs" placeholder="Ex: rádio 03 ficou com a equipe do turno anterior" oninput="update()" style="min-height:60px"></textarea>
+            <div class="error-msg">Obrigatório</div>
+          </div>
+
           <div>
             <div class="equip-sublabel">Status <span class="req" style="color:var(--danger)">*</span></div>
             <div class="field" id="f-radio" style="margin:0">
@@ -893,6 +960,124 @@ function dataReferencia() {
 
 const EQUIP_KEYS = ['radio','extintor','giroflex','gerador'];
 
+/* ============================================================
+   CADASTRO DE RÁDIOS
+   Para atualizar, basta alterar o número ao lado da placa.
+   Deixe '' (vazio) enquanto a placa não tiver rádio vinculado.
+   ============================================================ */
+const RADIOS = {
+  'TXA7G66': '03',
+  'TXA8J47': '04',
+  'TYI3J08': '07',
+  'TYZ9F56': '09',
+  'TXA2J74': '11',
+  'TYZ9F87': '12',
+  'TCF9F61': '',
+  'TXA2J73': '',
+  'TCF3J20': '',
+  'HIV8J66': '',
+  'TYI3J66': '',
+  'TCF9F53': '',
+  'TOK8H30': '',
+  'HIV8J60': '',
+  'TYZ9F55': '',
+  'TYZ9G01': '',
+  'TYZ9F74': '',
+  'TYZ9F75': '',
+  'TYZ9F95': '',
+  'TYZ9F99': '',
+  'TZD4I00': '',
+  'TZD4I37': '',
+  'TZD4I56': ''
+};
+
+// Monta a lista de rádios disponíveis para o campo "rádio em uso"
+(function preencherListaRadios() {
+  const sel = document.getElementById('radioUso');
+  Object.keys(RADIOS)
+    .filter(p => RADIOS[p])
+    .sort((a,b) => RADIOS[a].localeCompare(RADIOS[b]))
+    .forEach(p => {
+      const o = document.createElement('option');
+      o.textContent = `${RADIOS[p]} - ${p}`;
+      sel.appendChild(o);
+    });
+  ['Rádio sem numeração', 'VL sem rádio'].forEach(txt => {
+    const o = document.createElement('option');
+    o.textContent = txt;
+    sel.appendChild(o);
+  });
+})();
+
+function radioVinculado() {
+  const placa = (document.getElementById('placa') || {value:''}).value;
+  if (!placa) return '';
+  const num = RADIOS[placa];
+  return num ? `${num} - ${placa}` : '';
+}
+
+function placaSemRadio() {
+  const placa = (document.getElementById('placa') || {value:''}).value;
+  return !!placa && !RADIOS[placa];
+}
+
+function onPlacaChange(el) {
+  vals['placa'] = el.value;
+  document.getElementById('f-placa').classList.remove('invalid');
+
+  const box   = document.getElementById('radioBox');
+  const value = document.getElementById('radioBoxValue');
+  const fConf = document.getElementById('f-radioConfere');
+  const vinc  = radioVinculado();
+
+  // Zera as respostas do bloco de rádio a cada troca de placa
+  delete vals['radioConfere'];
+  fConf.querySelectorAll('.pill').forEach(p => p.className = 'pill');
+  document.getElementById('radioUso').value = '';
+  document.getElementById('radioObs').value = '';
+  ['f-radioConfere','f-radioUso','f-radioObs'].forEach(id =>
+    document.getElementById(id).classList.remove('invalid'));
+
+  if (vinc) {
+    box.className = 'radio-box';
+    value.textContent = vinc;
+    fConf.style.display = '';
+    document.getElementById('f-radioUso').style.display = 'none';
+    document.getElementById('f-radioObs').style.display = 'none';
+  } else if (placaSemRadio()) {
+    box.className = 'radio-box pendente';
+    value.textContent = 'Rádio ainda não vinculado — informe qual está em uso';
+    fConf.style.display = 'none';
+    document.getElementById('f-radioUso').style.display = '';
+    document.getElementById('f-radioObs').style.display = 'none';
+  } else {
+    box.className = 'radio-box vazio';
+    value.textContent = 'Selecione a placa';
+    fConf.style.display = 'none';
+    document.getElementById('f-radioUso').style.display = 'none';
+    document.getElementById('f-radioObs').style.display = 'none';
+  }
+  update();
+}
+
+function selPillRadio(el, value) {
+  el.closest('.pill-group').querySelectorAll('.pill').forEach(p => p.className = 'pill');
+  el.classList.add(value === 'Sim' ? 'ok' : 'nok');
+  vals['radioConfere'] = value;
+  document.getElementById('f-radioConfere').classList.remove('invalid');
+
+  const divergente = value === 'Não';
+  document.getElementById('f-radioUso').style.display = divergente ? 'block' : 'none';
+  document.getElementById('f-radioObs').style.display = divergente ? 'block' : 'none';
+  if (!divergente) {
+    document.getElementById('radioUso').value = '';
+    document.getElementById('radioObs').value = '';
+    document.getElementById('f-radioUso').classList.remove('invalid');
+    document.getElementById('f-radioObs').classList.remove('invalid');
+  }
+  update();
+}
+
 function selPill(el, field, value) {
   el.closest('.pill-group').querySelectorAll('.pill').forEach(p => p.className = 'pill');
   if (['OK','Realizada','Não','A','B','C','D','ADM','N/A','Colocado'].includes(value)) el.classList.add('ok');
@@ -936,6 +1121,9 @@ function getReqFields() {
   if (vals['letra'] !== 'ADM') base.splice(3, 0, 'turno');
   // Localização do gerador só é obrigatória quando o status não for N/A
   if (vals['gerador'] !== 'N/A') base.push('locGerador');
+  if (radioVinculado()) base.push('radioConfere');
+  if (placaSemRadio() || vals['radioConfere'] === 'Não') base.push('radioUso');
+  if (vals['radioConfere'] === 'Não') base.push('radioObs');
   EQUIP_KEYS.forEach(k => { if (vals[k] === 'N/C') base.push('nc'+k.charAt(0).toUpperCase()+k.slice(1)); });
   if (vals['carroceria'] === 'Sim') base.push('carroceriaDesc');
   return base;
@@ -943,7 +1131,7 @@ function getReqFields() {
 
 function fieldFilled(f) {
   if (['radio','extintor','giroflex','gerador','limpInterna','limpExterna','carroceria','combustivel','letra','obra','unidade',
-       'calcoRodaDireita','calcoRodaEsquerda'].includes(f)) return !!vals[f];
+       'calcoRodaDireita','calcoRodaEsquerda','radioConfere'].includes(f)) return !!vals[f];
   if (f === 'placa') { const el = document.getElementById('placa'); return el && el.value !== ''; }
   if (f === 'turno') { const el = document.getElementById('turno'); return el && el.value !== ''; }
   if (f === 'carroceriaDesc') return (document.getElementById('carroceriaDescText')||{value:''}).value.trim().length > 0;
@@ -1015,6 +1203,27 @@ function gerarRelatorio() {
     return line;
   }
 
+  // Bloco de conferência do rádio vinculado
+  function radioLine() {
+    let line = equipLine('Rádio','radio');
+    const vinc = radioVinculado();
+    if (vinc) {
+      line += `\n   Rádio vinculado: ${vinc}`;
+      if (v('radioConfere') === 'Sim') {
+        line += `\n   Rádio em uso: ${vinc}`;
+        line += `\n   Conferência: OK`;
+      } else {
+        line += `\n   Rádio em uso: ${g('radioUso')}`;
+        line += `\n   Conferência: DIVERGENTE`;
+        line += `\n   Motivo: ${g('radioObs')}`;
+      }
+    } else {
+      line += `\n   Rádio vinculado: não vinculado`;
+      line += `\n   Rádio em uso: ${g('radioUso')}`;
+    }
+    return line;
+  }
+
   const carroceriaTxt = v('carroceria') === 'Sim'
     ? `Sim\n   Material: ${g('carroceriaDescText')}`
     : 'Não';
@@ -1036,7 +1245,7 @@ function gerarRelatorio() {
     `Localização da Chave: ${g('locChave')}`,
     ``,
     `*EQUIPAMENTOS*`,
-    equipLine('Rádio','radio'),
+    radioLine(),
     equipLine('Extintor','extintor'),
     equipLine('Giroflex','giroflex'),
     equipLine('Gerador','gerador'),
@@ -1077,7 +1286,7 @@ function novoRelatorio() {
   document.querySelectorAll('.fuel-btn').forEach(b => b.classList.remove('selected'));
   document.querySelectorAll('.nc-extra, .nc-extra-equip').forEach(e => e.classList.remove('show'));
   document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
-  update();
+  onPlacaChange(document.getElementById('placa'));
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
